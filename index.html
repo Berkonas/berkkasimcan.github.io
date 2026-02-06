@@ -33,17 +33,15 @@
     <section class="hero">
       <div class="profile-block">
         <div class="profile-frame">
-          <picture>
-            <source srcset="assets/optimized/images/profile/IMG_0313.jpg" type="image/jpeg" />
-            <img
-              src="assets/images/profile/IMG_0313.png"
-              alt="Berk Kasimcan portrait"
-              width="2400"
-              height="3000"
-              fetchpriority="high"
-              decoding="async"
-            />
-          </picture>
+          <img
+            src="assets/optimized/images/profile/IMG_0313.jpg"
+            alt="Berk Kasimcan portrait"
+            width="2400"
+            height="3000"
+            fetchpriority="high"
+            decoding="async"
+            onerror="this.onerror=null;this.src='assets/images/profile/IMG_0313.png';"
+          />
         </div>
         <div class="profile-name">Berk Kasimcan</div>
       </div>
