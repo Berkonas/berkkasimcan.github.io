@@ -289,7 +289,7 @@ const PROJECTS = [
     media: [
       { type: "image", src: "assets/projects/haptic-belt/1.png" },
       { type: "image", src: "assets/projects/haptic-belt/2.png" },
-      { type: "youtube", id: "5pgo9ENCGuw", title: "Haptic belt demo" },
+      { type: "video", src: "assets/belt-demo.mp4" },
     ],
     what:
       "A wearable belt that turns heading and range into intuitive vibration patterns so users can navigate without relying on vision or audio.",
@@ -386,7 +386,7 @@ const PROJECTS = [
     cover: "assets/projects/ur5-push-place/cover.png",
     model: "assets/models/ur5.glb",
     media: [
-      { type: "youtube", id: "_O1o6v7AymE", title: "UR5 push-and-place demo" },
+      { type: "video", src: "assets/ur5-demo_Bjveby4O.mp4" },
     ],
     what:
       "A push-and-place routine in SE(3) implemented with two control strategies so their behavior can be compared under the same task constraints.",
@@ -671,18 +671,6 @@ function createProjectCard(project) {
         video.playsInline = true;
         video.addEventListener("loadedmetadata", updateOpenPanels);
         mediaItem.appendChild(video);
-      } else if (item.type === "youtube") {
-        const iframe = document.createElement("iframe");
-        const videoId = item.id || "";
-        iframe.src = videoId ? `https://www.youtube.com/embed/${videoId}` : item.src;
-        iframe.title = item.title || `${project.title} video`;
-        iframe.loading = "lazy";
-        iframe.allow =
-          "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
-        iframe.referrerPolicy = "strict-origin-when-cross-origin";
-        iframe.allowFullscreen = true;
-        iframe.addEventListener("load", updateOpenPanels);
-        mediaItem.appendChild(iframe);
       } else {
         const img = document.createElement("img");
         img.src = item.src;
