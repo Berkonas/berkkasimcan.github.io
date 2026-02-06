@@ -289,7 +289,7 @@ const PROJECTS = [
     media: [
       { type: "image", src: "assets/projects/haptic-belt/1.png" },
       { type: "image", src: "assets/projects/haptic-belt/2.png" },
-      { type: "video", src: "assets/belt-demo.mp4" },
+      { type: "youtube", id: "5pgo9ENCGuw", title: "Haptic belt demo" },
     ],
     what:
       "A wearable belt that turns heading and range into intuitive vibration patterns so users can navigate without relying on vision or audio.",
@@ -386,7 +386,7 @@ const PROJECTS = [
     cover: "assets/projects/ur5-push-place/cover.png",
     model: "assets/models/ur5.glb",
     media: [
-      { type: "video", src: "assets/ur5-demo_Bjveby4O.mp4" },
+      { type: "youtube", id: "_O1o6v7AymE", title: "UR5 push-and-place demo" },
     ],
     what:
       "A push-and-place routine in SE(3) implemented with two control strategies so their behavior can be compared under the same task constraints.",
