@@ -671,6 +671,18 @@ function createProjectCard(project) {
         video.playsInline = true;
         video.addEventListener("loadedmetadata", updateOpenPanels);
         mediaItem.appendChild(video);
+      } else if (item.type === "youtube") {
+        const iframe = document.createElement("iframe");
+        const videoId = item.id || "";
+        iframe.src = videoId ? `https://www.youtube.com/embed/${videoId}` : item.src;
+        iframe.title = item.title || `${project.title} video`;
+        iframe.loading = "lazy";
+        iframe.allow =
+          "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+        iframe.referrerPolicy = "strict-origin-when-cross-origin";
+        iframe.allowFullscreen = true;
+        iframe.addEventListener("load", updateOpenPanels);
+        mediaItem.appendChild(iframe);
       } else {
         const img = document.createElement("img");
         img.src = item.src;
