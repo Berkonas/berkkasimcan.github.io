@@ -6,6 +6,7 @@ ASSET_ROOT="$ROOT_DIR/assets"
 OUT_ROOT="$ASSET_ROOT/optimized"
 MAX_DIMENSION="${1:-1800}"
 QUALITY="${2:-68}"
+RESPONSIVE_SIZES=("${3:-480}" "${4:-960}" "${5:-1440}")
 
 if ! command -v sips >/dev/null 2>&1; then
   echo "sips is required but was not found."
@@ -22,6 +23,12 @@ while IFS= read -r -d '' src; do
   mkdir -p "$(dirname "$dst")"
 
   sips -s format jpeg -s formatOptions "$QUALITY" -Z "$MAX_DIMENSION" "$src" --out "$dst" >/dev/null
+
+  for width in "${RESPONSIVE_SIZES[@]}"; do
+    responsive_dst="$OUT_ROOT/${rel_no_ext}-${width}.jpg"
+    sips -s format jpeg -s formatOptions "$QUALITY" -Z "$width" "$src" --out "$responsive_dst" >/dev/null
+  done
+
   count=$((count + 1))
 done < <(find "$ASSET_ROOT" -type f \( -iname "*.png" -o -iname "*.jpg" -o -iname "*.jpeg" \) ! -path "$OUT_ROOT/*" -print0)
 

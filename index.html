@@ -4,6 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Berk Kasimcan | Portfolio</title>
+  <link
+    rel="preload"
+    as="image"
+    href="assets/optimized/images/profile/IMG_0313-960.jpg"
+    imagesrcset="assets/optimized/images/profile/IMG_0313-480.jpg 480w, assets/optimized/images/profile/IMG_0313-960.jpg 960w, assets/optimized/images/profile/IMG_0313-1440.jpg 1440w, assets/optimized/images/profile/IMG_0313.jpg 1800w"
+    imagesizes="(max-width: 720px) 78vw, 360px"
+  />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
@@ -34,13 +41,16 @@
       <div class="profile-block">
         <div class="profile-frame">
           <img
-            src="assets/optimized/images/profile/IMG_0313.jpg"
+            src="assets/optimized/images/profile/IMG_0313-960.jpg"
+            srcset="assets/optimized/images/profile/IMG_0313-480.jpg 480w, assets/optimized/images/profile/IMG_0313-960.jpg 960w, assets/optimized/images/profile/IMG_0313-1440.jpg 1440w, assets/optimized/images/profile/IMG_0313.jpg 1800w"
+            sizes="(max-width: 720px) 78vw, 360px"
             alt="Berk Kasimcan portrait"
             width="2400"
             height="3000"
+            loading="eager"
             fetchpriority="high"
             decoding="async"
-            onerror="this.onerror=null;this.src='assets/images/profile/IMG_0313.png';"
+            onerror="this.onerror=null;this.removeAttribute('srcset');this.removeAttribute('sizes');this.src='assets/images/profile/IMG_0313.png';"
           />
         </div>
         <div class="profile-name">Berk Kasimcan</div>

@@ -501,13 +501,42 @@ function getOptimizedImagePath(src) {
   return src.replace(/^assets\//, "assets/optimized/").replace(/\.(png|jpe?g)$/i, ".jpg");
 }
 
-function setImageSourceWithFallback(img, src, onHardFailure) {
+function getResponsiveImageCandidates(src) {
+  const optimizedSrc = getOptimizedImagePath(src);
+  if (optimizedSrc === src) {
+    return [];
+  }
+
+  return [480, 960, 1440].map((width) => ({
+    src: optimizedSrc.replace(/\.jpg$/i, `-${width}.jpg`),
+    width,
+  }));
+}
+
+function setImageSourceWithFallback(img, src, options = {}) {
+  const { onHardFailure, sizes } = options;
   const optimizedSrc = getOptimizedImagePath(src);
   let fallbackAttempted = false;
   img.decoding = "async";
+  const candidates = getResponsiveImageCandidates(src);
+
+  if (candidates.length) {
+    img.srcset = `${candidates.map((candidate) => `${candidate.src} ${candidate.width}w`).join(", ")}, ${optimizedSrc} 1800w`;
+  } else {
+    img.removeAttribute("srcset");
+  }
+
+  if (sizes) {
+    img.sizes = sizes;
+  } else {
+    img.removeAttribute("sizes");
+  }
+
   img.onerror = () => {
     if (!fallbackAttempted && optimizedSrc !== src) {
       fallbackAttempted = true;
+      img.removeAttribute("srcset");
+      img.removeAttribute("sizes");
       img.src = src;
       return;
     }
@@ -515,7 +544,7 @@ function setImageSourceWithFallback(img, src, onHardFailure) {
       onHardFailure();
     }
   };
-  img.src = optimizedSrc;
+  img.src = candidates[1]?.src || candidates[0]?.src || optimizedSrc;
 }
 
 function createCourseCard(course) {
@@ -651,7 +680,9 @@ function createProjectCard(project) {
     const coverImg = document.createElement("img");
     coverImg.alt = `${project.title} cover`;
     coverImg.loading = "lazy";
-    setImageSourceWithFallback(coverImg, project.cover);
+    setImageSourceWithFallback(coverImg, project.cover, {
+      sizes: "(max-width: 720px) 92vw, 320px",
+    });
     cover.appendChild(coverImg);
   }
 
@@ -731,6 +762,7 @@ function createProjectCard(project) {
         video.src = item.src;
         video.controls = true;
         video.playsInline = true;
+        video.preload = "none";
         video.addEventListener("loadedmetadata", updateOpenPanels);
         mediaItem.appendChild(video);
       } else if (item.type === "youtube") {
@@ -749,7 +781,9 @@ function createProjectCard(project) {
         const img = document.createElement("img");
         img.alt = `${project.title} media`;
         img.loading = "lazy";
-        setImageSourceWithFallback(img, item.src);
+        setImageSourceWithFallback(img, item.src, {
+          sizes: "(max-width: 720px) 92vw, (max-width: 1180px) 44vw, 360px",
+        });
         img.addEventListener("load", updateOpenPanels);
         img.addEventListener("click", () => openLightbox(item.src));
         mediaItem.appendChild(img);
@@ -1029,7 +1063,7 @@ function openLightbox(src) {
     });
   }
   const img = lightboxEl.querySelector("img");
-  setImageSourceWithFallback(img, src);
+  setImageSourceWithFallback(img, src, { sizes: "100vw" });
   lightboxEl.classList.add("open");
 }
 
@@ -1044,7 +1078,9 @@ function initModelViewers() {
         container.innerHTML = "";
         const img = document.createElement("img");
         img.alt = "Project cover";
-        setImageSourceWithFallback(img, fallback);
+        setImageSourceWithFallback(img, fallback, {
+          sizes: "(max-width: 720px) 92vw, 320px",
+        });
         container.appendChild(img);
       }
     });
@@ -1164,7 +1200,10 @@ function renderGallery() {
     const img = document.createElement("img");
     img.alt = "Gallery photo";
     img.loading = "lazy";
-    setImageSourceWithFallback(img, src, () => button.remove());
+    setImageSourceWithFallback(img, src, {
+      sizes: "(max-width: 720px) 92vw, (max-width: 1100px) 44vw, 30vw",
+      onHardFailure: () => button.remove(),
+    });
     button.appendChild(img);
     button.addEventListener("click", () => openLightbox(src));
     grid.appendChild(button);
