@@ -1242,105 +1242,107 @@ function initMobileNav() {
 }
 
 function initIntro() {
+  const overlay = document.getElementById("intro-overlay");
   const hero = document.querySelector(".hero");
-  if (!hero) return;
-  // Respect user motion preferences and skip on small screens.
-  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (prefersReducedMotion) {
-    try {
-      localStorage.setItem("introSeen", "true");
-    } catch (err) {
-      // ignore
-    }
-    return;
-  }
-  if (window.innerWidth < 640) return;
-  try {
-    // Only run once per user.
-    if (localStorage.getItem("introSeen") === "true") return;
-  } catch (err) {
-    return;
-  }
+  if (!hero || !overlay) return;
 
-  const overlay = document.createElement("div");
-  overlay.id = "intro-overlay";
-  overlay.innerHTML = `
-    <button class="intro-skip" type="button">Skip intro →</button>
-    <div class="intro-shell">
-      <button class="intro-door-button" type="button" aria-label="Knock to enter">
-        <div class="intro-door">
-          <div class="door-panel door-left"></div>
-          <div class="door-panel door-right"></div>
-          <div class="door-cracks"></div>
-          <div class="door-glow"></div>
-        </div>
-      </button>
-      <div class="intro-caption">Knock to enter</div>
-    </div>
-  `;
-  const reveal = document.createElement("div");
-  reveal.className = "intro-reveal";
-  reveal.setAttribute("aria-hidden", "true");
-  reveal.innerHTML = `<div class="intro-welcome">Welcome</div>`;
-  overlay.insertBefore(reveal, overlay.querySelector(".intro-shell"));
-  document.body.appendChild(overlay);
-  document.body.classList.add("intro-active");
-
-  const doorBtn = overlay.querySelector(".intro-door-button");
+  const root = document.documentElement;
   const skipBtn = overlay.querySelector(".intro-skip");
-  let opening = false;
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const shouldShow = root.classList.contains("intro-pending");
   const timeouts = [];
+  let finished = false;
+  let keyHandler;
+  let visibilityHandler;
 
-  const finish = () => {
-    // Clean up: stop timers, mark as seen, remove overlay.
+  const clearTimers = () => {
     timeouts.forEach((id) => clearTimeout(id));
+    timeouts.length = 0;
+  };
+
+  const markSeen = () => {
     try {
-      localStorage.setItem("introSeen", "true");
+      sessionStorage.setItem("introSeenSession", "true");
     } catch (err) {
       // ignore
     }
-    overlay.classList.add("fade-out");
-    setTimeout(() => {
-      overlay.remove();
-      document.body.classList.remove("intro-active");
-    }, 600);
   };
 
-  const start = () => {
-    if (opening) return;
-    opening = true;
-    overlay.classList.add("knock");
-    timeouts.push(setTimeout(() => {
-      overlay.classList.remove("knock");
-      overlay.classList.add("cracked");
-    }, 280));
-    timeouts.push(setTimeout(() => {
-      overlay.classList.add("opening");
-    }, 820));
-    timeouts.push(setTimeout(() => {
-      finish();
-    }, 2200));
+  const cleanup = () => {
+    clearTimers();
+    root.classList.remove("intro-pending");
+    document.body.classList.remove("intro-active");
+    overlay.classList.remove("is-visible", "is-exiting");
+    overlay.setAttribute("aria-hidden", "true");
+    if (keyHandler) {
+      window.removeEventListener("keydown", keyHandler);
+    }
+    if (visibilityHandler) {
+      document.removeEventListener("visibilitychange", visibilityHandler);
+    }
   };
 
-  doorBtn.addEventListener("click", start);
-  doorBtn.addEventListener("keydown", (event) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      start();
+  if (!shouldShow || prefersReducedMotion) {
+    cleanup();
+    return;
+  }
+
+  document.body.classList.add("intro-active");
+  overlay.setAttribute("aria-hidden", "false");
+
+  const isCompact = window.innerWidth < 780;
+  const introLength = isCompact ? 1950 : 2450;
+  const exitDuration = 760;
+
+  const finish = (immediate = false) => {
+    if (finished) return;
+    finished = true;
+    markSeen();
+    clearTimers();
+    if (immediate) {
+      cleanup();
+      return;
     }
+    overlay.classList.add("is-exiting");
+    timeouts.push(setTimeout(cleanup, exitDuration));
+  };
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      if (!finished) {
+        overlay.classList.add("is-visible");
+      }
+    });
+  });
+  timeouts.push(setTimeout(() => finish(), introLength));
+
+  if (skipBtn) {
+    skipBtn.addEventListener("click", () => finish());
+  }
+
+  overlay.addEventListener("click", (event) => {
+    if (event.target.closest(".intro-skip")) {
+      return;
+    }
+    finish();
   });
 
-  skipBtn.addEventListener("click", finish);
-  overlay.addEventListener("click", () => {
-    if (opening && overlay.classList.contains("opening")) {
+  keyHandler = (event) => {
+    if (event.key === "Escape" || event.key === "Enter" || event.key === " ") {
+      if (event.key !== "Escape") {
+        event.preventDefault();
+      }
       finish();
     }
-  });
-  window.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
-      finish();
+  };
+  visibilityHandler = () => {
+    if (document.hidden) {
+      finish(true);
     }
-  });
+  };
+
+  window.addEventListener("keydown", keyHandler);
+  document.addEventListener("visibilitychange", visibilityHandler);
 }
 
 document.addEventListener("DOMContentLoaded", () => {

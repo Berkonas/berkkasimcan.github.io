@@ -4,6 +4,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Berk Kasimcan | Portfolio</title>
+  <script>
+    (() => {
+      try {
+        const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (!prefersReducedMotion && !sessionStorage.getItem("introSeenSession")) {
+          document.documentElement.classList.add("intro-pending");
+        }
+      } catch (err) {
+        // Ignore storage or media-query failures and fall back to loading the page normally.
+      }
+    })();
+  </script>
   <link
     rel="preload"
     as="image"
@@ -17,6 +29,50 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <div id="intro-overlay" aria-hidden="true">
+    <button class="intro-skip" type="button" aria-label="Skip intro">Skip intro</button>
+    <div class="intro-noise" aria-hidden="true"></div>
+    <div class="intro-grid" aria-hidden="true"></div>
+    <div class="intro-beam" aria-hidden="true"></div>
+    <div class="intro-panel">
+      <div class="intro-topline">
+        <span>Berk Kasimcan</span>
+        <span>Portfolio</span>
+      </div>
+      <div class="intro-main">
+        <div class="intro-visual" aria-hidden="true">
+          <div class="intro-visual-ring intro-ring-one"></div>
+          <div class="intro-visual-ring intro-ring-two"></div>
+          <div class="intro-portrait-shell">
+            <img
+              src="assets/optimized/images/profile/IMG_0313-960.jpg"
+              srcset="assets/optimized/images/profile/IMG_0313-480.jpg 480w, assets/optimized/images/profile/IMG_0313-960.jpg 960w, assets/optimized/images/profile/IMG_0313-1440.jpg 1440w, assets/optimized/images/profile/IMG_0313.jpg 1800w"
+              sizes="(max-width: 780px) 48vw, 340px"
+              alt=""
+              width="2400"
+              height="3000"
+              decoding="async"
+              onerror="this.onerror=null;this.removeAttribute('srcset');this.removeAttribute('sizes');this.src='assets/images/profile/IMG_0313.png';"
+            />
+          </div>
+          <div class="intro-crosshair"></div>
+        </div>
+        <div class="intro-copy">
+          <p class="intro-kicker">Mechanical Engineer • Researcher</p>
+          <h2 class="intro-title">
+            <span>Robotics</span>
+            <span>Haptics</span>
+            <span>Healthcare</span>
+          </h2>
+          <p class="intro-summary">Human-centered systems built for real people.</p>
+        </div>
+      </div>
+      <div class="intro-status">
+        <span class="intro-status-dot"></span>
+        <span>Entering portfolio</span>
+      </div>
+    </div>
+  </div>
   <div class="page">
     <header class="header">
       <nav class="nav">
