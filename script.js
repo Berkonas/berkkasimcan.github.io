@@ -1,3 +1,33 @@
+const INTRO_VERSION = "20260422c";
+
+function getIntroSeenKey() {
+  return `introSeenSession:${INTRO_VERSION}`;
+}
+
+function resetLegacyIntroArtifacts() {
+  document.querySelectorAll(
+    [
+      ".intro-crosshair",
+      ".intro-visual-ring",
+      ".intro-ring-one",
+      ".intro-ring-two",
+      ".intro-shell",
+      ".intro-reveal",
+      ".intro-door-button",
+      ".intro-door",
+      ".door-panel",
+      ".door-cracks",
+      ".door-glow",
+      ".intro-caption",
+    ].join(", "),
+  ).forEach((node) => node.remove());
+
+  const overlay = document.getElementById("intro-overlay");
+  if (overlay) {
+    overlay.classList.remove("knock", "cracked", "opening", "fade-out");
+  }
+}
+
 const coursesData = [
   {
     category: "Robotics, Dynamics, and Control",
@@ -1242,6 +1272,8 @@ function initMobileNav() {
 }
 
 function initIntro() {
+  resetLegacyIntroArtifacts();
+
   const overlay = document.getElementById("intro-overlay");
   const hero = document.querySelector(".hero");
   if (!hero || !overlay) return;
@@ -1250,6 +1282,7 @@ function initIntro() {
   const skipBtn = overlay.querySelector(".intro-skip");
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const shouldShow = root.classList.contains("intro-pending");
+  const introSeenKey = getIntroSeenKey();
   const timeouts = [];
   let finished = false;
   let keyHandler;
@@ -1262,7 +1295,7 @@ function initIntro() {
 
   const markSeen = () => {
     try {
-      sessionStorage.setItem("introSeenSession", "true");
+      sessionStorage.setItem(introSeenKey, "true");
     } catch (err) {
       // ignore
     }
@@ -1352,4 +1385,8 @@ document.addEventListener("DOMContentLoaded", () => {
   renderProjects();
   renderGallery();
   initIntro();
+});
+
+window.addEventListener("pageshow", () => {
+  resetLegacyIntroArtifacts();
 });

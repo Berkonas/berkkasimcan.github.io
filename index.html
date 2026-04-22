@@ -6,9 +6,11 @@
   <title>Berk Kasimcan | Portfolio</title>
   <script>
     (() => {
+      const INTRO_VERSION = "20260422c";
       try {
         const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        if (!prefersReducedMotion && !sessionStorage.getItem("introSeenSession")) {
+        const introSeenKey = `introSeenSession:${INTRO_VERSION}`;
+        if (!prefersReducedMotion && !sessionStorage.getItem(introSeenKey)) {
           document.documentElement.classList.add("intro-pending");
         }
       } catch (err) {
@@ -26,7 +28,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=20260422b" />
+  <link rel="stylesheet" href="styles.css?v=20260422c" />
 </head>
 <body>
   <div id="intro-overlay" aria-hidden="true">
@@ -193,6 +195,6 @@
       Built by Berk Kasimcan • Robotics, Haptics, Healthcare
     </footer>
   </div>
-  <script src="script.js?v=20260422b" defer></script>
+  <script src="script.js?v=20260422c" defer></script>
 </body>
 </html>
